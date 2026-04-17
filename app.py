@@ -1,33 +1,30 @@
 import streamlit as st
-import random
+import json
 
 st.title("📝 Prova de Polímeros")
 
-questoes = [
-    {
-        "pergunta": "O que é fluência?",
-        "alternativas": ["Deformação ao longo do tempo", "Ruptura", "Elasticidade", "Compressão"],
-        "correta": "Deformação ao longo do tempo"
-    },
-    {
-        "pergunta": "A Tg representa:",
-        "alternativas": ["Mobilidade molecular", "Ruptura", "Carga", "Densidade"],
-        "correta": "Mobilidade molecular"
-    }
-]
+# carregar prova do JSON
+with open("prova.json") as f:
+    dados = json.load(f)
 
-random.shuffle(questoes)
+prova = dados["prova"]
+gabarito = dados["gabarito"]
 
 respostas = {}
 
-for i, q in enumerate(questoes):
-    respostas[i] = st.radio(q["pergunta"], q["alternativas"], key=i)
+for i, q in enumerate(prova):
+    respostas[i] = st.radio(
+        q["pergunta"],
+        q["alternativas"],
+        key=i
+    )
 
 if st.button("Finalizar"):
     acertos = 0
-    for i, q in enumerate(questoes):
-        if respostas[i] == q["correta"]:
+
+    for i in respostas:
+        if respostas[i] == gabarito[str(i)]:
             acertos += 1
 
-    nota = (acertos / len(questoes)) * 10
+    nota = (acertos / len(prova)) * 10
     st.success(f"Sua nota: {nota:.1f}")
